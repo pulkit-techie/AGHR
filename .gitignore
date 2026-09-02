@@ -1,0 +1,32 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+venv/
+env/
+.env
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Data and Heavy Files
+*.zip
+*.npy
+*.faiss
+*.db
+*.sqlite3
+
+# Project specific
+aghr-system/data/raw/
+aghr-system/data/chunks/
+aghr-system/data/vector_index/
+aghr-system/data/chroma_db/
+aghr-system/data/kg_triples/
+aghr-system/models/
+aghr-system/logs/
+aghr-system/scratch/
+aghr-system/results/
+
+# OS generated files
+.DS_Store
+Thumbs.db

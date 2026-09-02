@@ -1,0 +1,195 @@
+# ============================================================
+# AGHR System — Central Configuration
+# ============================================================
+
+project:
+  name: "AGHR - Adaptive Graph-Hybrid Retrieval"
+  version: "1.0.0"
+  domain: "healthcare"
+  description: "Hybrid RAG + KG system for medical QA with hallucination reduction"
+
+# --- Data Pipeline (Phase 1) ---
+data:
+  raw_dir: "data/raw"
+  processed_dir: "data/processed"
+  chunks_dir: "data/chunks"
+  qa_dir: "data/qa_pairs"
+  kg_dir: "data/kg_triples"
+
+  # Chunking parameters
+  chunk_size: 500          # tokens
+  chunk_overlap: 80        # tokens
+  tokenizer: "cl100k_base" # tiktoken encoding
+
+  # Dataset split ratios
+  train_ratio: 0.70
+  val_ratio: 0.15
+  test_ratio: 0.15
+
+  # HuggingFace datasets to load
+  datasets:
+    - name: "hotpot_qa"
+      config: "distractor"
+      split: "train[:2000]"   # Pilot: first 2000 samples
+    - name: "pubmed_qa"
+      config: "pqa_labeled"
+      split: "train[:1000]"
+
+# --- Embeddings (Phase 2) ---
+embeddings:
+  # Model choices
+  models:
+    baseline:
+      name: "sentence-transformers/all-MiniLM-L6-v2"
+      dimension: 384
+    high_accuracy:
+      name: "BAAI/bge-base-en-v1.5"
+      dimension: 768
+
+  # Default model
+  default_model: "baseline"
+  batch_size: 64
+  normalize: true
+
+# --- Vector Store (Phase 2) ---
+vector_store:
+  backend: "faiss"         # "faiss" or "chroma"
+  index_path: "data/vector_index"
+  top_k: 5
+  similarity: "cosine"     # "cosine" or "l2"
+
+  # Chroma-specific
+  chroma:
+    persist_dir: "data/chroma_db"
+    collection_name: "aghr_medical"
+
+# --- Knowledge Graph (Phase 3) ---
+knowledge_graph:
+  neo4j:
+    uri: "neo4j+s://c9a8e9d2.databases.neo4j.io"
+    username: "c9a8e9d2"
+    password: "cVK7YsD7MScI1j7YImoWgmxg7sbuQb0TVbxMENHMv14"
+    database: "c9a8e9d2"
+
+  # Entity extraction
+  spacy_model: "en_core_web_trf"
+  entity_types:
+    - "DISEASE"
+    - "SYMPTOM"
+    - "TREATMENT"
+    - "MEDICATION"
+    - "BODY_PART"
+    - "PROCEDURE"
+    - "ORGANISM"
+
+  # Multi-hop
+  max_hops: 3
+
+# --- Query Understanding (Phase 4) ---
+query:
+  complexity_threshold:
+    simple: 1       # single entity, factual
+    moderate: 2     # 2 entities or relational
+    complex: 3      # 3+ entities, multi-hop
+
+  routing:
+    factual: "vector"
+    relational: "graph"
+    complex: "hybrid"
+
+# --- AGHR Retrieval (Phase 5) ---
+retrieval:
+  aghr:
+    alpha: 0.40     # vector similarity weight
+    beta: 0.35      # graph path score weight
+    gamma: 0.25     # entity overlap weight
+
+  top_n_final: 5    # final results after fusion
+
+# --- Context Fusion (Phase 6) ---
+context:
+  max_tokens: 2048          # maximum context window
+  dedup_threshold: 0.85     # semantic similarity threshold for dedup
+  compression_ratio: 0.7    # target compression
+
+# --- LLM Generation (Phases 7-8) ---
+generation:
+  models:
+    flan_t5:
+      name: "google/flan-t5-small"
+      type: "seq2seq"
+      max_new_tokens: 512
+    tinyllama:
+      name: "TinyLlama/TinyLlama-1.1B-Chat-v1.0"
+      type: "causal"
+      max_new_tokens: 512
+
+  default_model: "flan_t5"
+  temperature: 0.3
+  top_p: 0.9
+
+# --- Fine-tuning (Phase 9) ---
+finetuning:
+  method: "qlora"
+  lora:
+    r: 8
+    lora_alpha: 32
+    lora_dropout: 0.05
+    target_modules: ["q_proj", "v_proj"]
+    bias: "none"
+
+  quantization:
+    load_in_4bit: true
+    bnb_4bit_quant_type: "nf4"
+    bnb_4bit_compute_dtype: "bfloat16"
+
+  training:
+    epochs: 3
+    batch_size: 4
+    gradient_accumulation_steps: 4
+    learning_rate: 0.0002
+    warmup_ratio: 0.03
+    max_seq_length: 1024
+    output_dir: "models/finetuned"
+    save_steps: 100
+
+# --- Hallucination Guard (Phase 10) ---
+hallucination:
+  confidence_threshold: 0.05
+  grounding_model: "cross-encoder/nli-deberta-v3-base"
+  fallback_message: "Insufficient information to provide a reliable answer."
+
+# --- Evaluation (Phase 11) ---
+evaluation:
+  metrics:
+    - "bleu"
+    - "rouge"
+    - "exact_match"
+    - "f1"
+    - "faithfulness"
+    - "answer_relevancy"
+    - "context_recall"
+    - "context_precision"
+    - "retrieval_precision"
+    - "retrieval_recall"
+    - "latency"
+
+  num_runs: 3              # for statistical validation
+  significance_level: 0.05 # p-value threshold
+
+  results_dir: "results/metrics"
+  plots_dir: "results/plots"
+
+# --- Deployment (Phase 17) ---
+deployment:
+  backend:
+    host: "0.0.0.0"
+    port: 8000
+  frontend:
+    port: 8501
+
+# --- Logging ---
+logging:
+  level: "INFO"
+  log_file: "logs/aghr.log"
+  rotation: "10 MB"

@@ -1,0 +1,130 @@
+# ============================================================
+# AGHR System — Prompt Templates
+# ============================================================
+
+# --- Zero-shot prompt ---
+zero_shot: |
+  You are a medical knowledge assistant. Answer the following question using ONLY the provided context.
+
+  Context:
+  {context}
+
+  Question: {question}
+
+  Instructions:
+  - Use ONLY the information from the provided context.
+  - If the answer cannot be found in the context, respond with "Not found in the provided context."
+  - Be concise and factual.
+
+  Answer:
+
+# --- Few-shot prompt ---
+few_shot: |
+  You are a medical knowledge assistant. Answer questions using ONLY the provided context.
+
+  Example 1:
+  Context: "Diabetes mellitus is a metabolic disease characterized by high blood sugar levels. Type 2 diabetes is linked to obesity and sedentary lifestyle."
+  Question: "What causes Type 2 diabetes?"
+  Answer: "Type 2 diabetes is linked to obesity and sedentary lifestyle."
+
+  Example 2:
+  Context: "Hypertension, or high blood pressure, increases the risk of heart disease and stroke. Regular exercise and a low-sodium diet can help manage blood pressure."
+  Question: "How can blood pressure be managed?"
+  Answer: "Blood pressure can be managed through regular exercise and a low-sodium diet."
+
+  Now answer the following:
+
+  Context:
+  {context}
+
+  Question: {question}
+
+  Answer:
+
+# --- Chain-of-thought prompt ---
+chain_of_thought: |
+  You are a medical knowledge assistant. Use ONLY the provided context to answer.
+
+  Context:
+  {context}
+
+  Question: {question}
+
+  Instructions:
+  - Reason step-by-step using the provided context.
+  - If the answer is not found in the context, say "Not found in the provided context."
+  - Do NOT use any external knowledge.
+
+  Output format:
+  Reasoning: [your step-by-step reasoning]
+  Final Answer: [your concise answer]
+  Sources: [which parts of context you used]
+  Confidence: [0.0 to 1.0]
+
+# --- Structured output prompt (final system) ---
+structured: |
+  You are a medical knowledge assistant specializing in senior citizen health.
+
+  Use ONLY the provided context to answer. Do NOT hallucinate or use external knowledge.
+
+  === CONTEXT (Vector Retrieval) ===
+  {vector_context}
+
+  === CONTEXT (Knowledge Graph) ===
+  {graph_context}
+
+  === QUESTION ===
+  {question}
+
+  === INSTRUCTIONS ===
+  1. Analyze both vector and graph contexts carefully.
+  2. Reason step-by-step.
+  3. If the answer cannot be determined from the context, state "Not found in the provided context."
+  4. Cite specific sources from the context.
+
+  === OUTPUT FORMAT ===
+  Reasoning:
+  [Your step-by-step reasoning process]
+
+  Final Answer:
+  [Your concise, factual answer]
+
+  Sources:
+  [List the specific context segments used]
+
+  Confidence:
+  [Score from 0.0 to 1.0 based on context support]
+
+# --- Relation extraction prompt (for KG construction) ---
+relation_extraction: |
+  Extract all medical entity relationships from the following text.
+
+  Text: {text}
+
+  For each relationship found, output in JSON format:
+  {{
+    "entity_1": "<entity name>",
+    "entity_1_type": "<DISEASE|SYMPTOM|TREATMENT|MEDICATION|BODY_PART|PROCEDURE>",
+    "relation": "<relationship type>",
+    "entity_2": "<entity name>",
+    "entity_2_type": "<DISEASE|SYMPTOM|TREATMENT|MEDICATION|BODY_PART|PROCEDURE>"
+  }}
+
+  Common medical relations:
+  - CAUSES, TREATS, PREVENTS, SYMPTOM_OF, RISK_FACTOR_FOR
+  - ASSOCIATED_WITH, CONTRAINDICATED_WITH, PART_OF
+  - DIAGNOSED_BY, MANAGED_BY, LEADS_TO
+
+  Output a JSON array of all relationships found:
+
+# --- QLoRA fine-tuning instruction format ---
+finetuning_template: |
+  ### Instruction:
+  You are a medical QA assistant. Answer the question using only the provided context. If the answer is not in the context, say "Not found."
+
+  ### Input:
+  Context: {context}
+  Question: {question}
+
+  ### Response:
+  {answer}

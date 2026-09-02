@@ -1,0 +1,12 @@
+{
+  "exact_match": 0.4,
+  "f1": 0.4,
+  "bleu": 0.09881114140414607,
+  "rouge1": 0.4,
+  "rouge2": 0.2,
+  "rougeL": 0.4,
+  "num_samples": 5,
+  "avg_latency": 0.9337550640106201,
+  "total_latency": 4.668775320053101,
+  "experiment": "AGHR_Hybrid"
+}

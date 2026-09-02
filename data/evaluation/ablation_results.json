@@ -1,0 +1,46 @@
+{
+  "1. Base LLM": {
+    "exact_match": 0.0,
+    "f1": 0.08771929824561403,
+    "bleu": 0.016792571420670133,
+    "rouge1": 0.12105263157894737,
+    "rouge2": 0.04,
+    "rougeL": 0.12105263157894737,
+    "num_samples": 5,
+    "avg_latency": 0.252,
+    "config": "1. Base LLM"
+  },
+  "2. Prompt Only": {
+    "exact_match": 0.0,
+    "f1": 0.1337995337995338,
+    "bleu": 0.016324928875634876,
+    "rouge1": 0.15046620046620046,
+    "rouge2": 0.05636363636363637,
+    "rougeL": 0.15046620046620046,
+    "num_samples": 5,
+    "avg_latency": 0.546,
+    "config": "2. Prompt Only"
+  },
+  "3. RAG Only": {
+    "exact_match": 0.0,
+    "f1": 0.08444444444444443,
+    "bleu": 4.436254415536008e-05,
+    "rouge1": 0.08444444444444443,
+    "rouge2": 0.0,
+    "rougeL": 0.08444444444444443,
+    "num_samples": 5,
+    "avg_latency": 0.35,
+    "config": "3. RAG Only"
+  },
+  "4. AGHR Hybrid": {
+    "exact_match": 0.0,
+    "f1": 0.09028142589118197,
+    "bleu": 0.008266965815389476,
+    "rouge1": 0.09028142589118197,
+    "rouge2": 0.0,
+    "rougeL": 0.09028142589118197,
+    "num_samples": 5,
+    "avg_latency": 0.593,
+    "config": "4. AGHR Hybrid"
+  }
+}
